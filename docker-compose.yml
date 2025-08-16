@@ -1,0 +1,60 @@
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: api_mysql
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD:  ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "33061:3306"
+    networks:
+      - api_network
+
+
+  ####### service: app
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: api_app
+    restart: always
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - api_network
+
+
+  ######## Nginx web server
+
+  webserver:
+    image: nginx:1.25-alpine
+    container_name: api_webserver
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - api_network
+
+    #### Network configuration
+
+networks:
+  api_network:
+    driver: bridge
+
+volumes:
+  db_data:
+
