@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Entity\Key;
 use App\Repository\KeyRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -59,7 +59,7 @@ final class WebController extends AbstractController
     public function toggleStatus(Key $key, EntityManagerInterface $em): Response
     {
         // Symfony's ParamConverter finds the key for us by its {id}
-        $newStatus = $key->getStatus() === 'active' ? 'inactive' : 'active';
+        $newStatus = 'active' === $key->getStatus() ? 'inactive' : 'active';
         $key->setStatus($newStatus);
 
         $em->flush(); // Save the change to the database
