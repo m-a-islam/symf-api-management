@@ -1,36 +1,41 @@
+# =================================================================
+# Production Dockerfile for the KEMAS Key API
+# This is a multi-stage build to create a small and optimized final image.
+# =================================================================
+
 # --- Stage 1: The "builder" stage ---
-# Use an official Composer image to install dependencies
 FROM composer:2.7 as builder
 
 WORKDIR /app
-# Copy only the composer files first to leverage Docker's layer caching
+
 COPY src/composer.json src/composer.lock ./
-# Install production-only dependencies and optimize the autoloader
 RUN composer install --no-dev --no-interaction --no-progress --no-scripts --optimize-autoloader
 
-# Copy the rest of the application source code
+# Copy the .env.test file and rename it to .env for the build process.
+# This is necessary for Symfony scripts like cache:clear to run.
+COPY src/.env.test .env
+
+# Now, copy the rest of the application source code
 COPY src/. .
+
 # Run Symfony's post-install scripts to warm up the cache
 RUN composer run-script post-install-cmd
 
-# --- Stage 2: The "final" stage ---
-# Use our lean, production-ready php-fpm image
+# =================================================================
+# --- Stage 2: The "final" production stage ---
+# =================================================================
+
 FROM php:8.2-fpm-alpine
 
-# Install only the necessary PHP extensions for running the app
 RUN apk add --no-cache icu-dev \
     && docker-php-ext-install pdo pdo_mysql intl opcache
 
 WORKDIR /var/www/html
 
-# Copy the installed vendor directory and the source code from the "builder" stage
 COPY --from=builder /app .
 
-# Set correct permissions for the web server user
 RUN chown -R www-data:www-data var
 
-# Expose the PHP-FPM port
 EXPOSE 9000
 
-# The command to run the application
 CMD ["php-fpm"]
