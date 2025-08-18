@@ -15,7 +15,8 @@ RUN apk add --no-cache \
     icu-dev \
     icu-data-full \
     zip \
-    unzip
+    unzip \
+    bash
 
 # --- PHP Extensions ---
 # Install the PHP extensions that Symfony and our application need.
