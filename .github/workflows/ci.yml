@@ -34,8 +34,9 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          # The path now needs to be relative to the root
+          path: src/${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/src/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
 
@@ -43,13 +44,13 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run Linter
-        run: php ./src/bin/console lint:yaml ./src/config
+        run: php ./bin/console lint:yaml ./config
 
       - name: Check Coding Standards
-        run: php ./src/vendor/bin/php-cs-fixer fix --dry-run --diff
+        run: php ./vendor/bin/php-cs-fixer fix --dry-run --diff
 
       - name: Run Tests
-        run: php ./src/bin/phpunit
+        run: php ./bin/phpunit
 
   # --- Job 2: Build and Push Docker Image (Our new CD job) ---
   build-and-push:
