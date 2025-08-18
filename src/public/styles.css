@@ -1,0 +1,14 @@
+/* Same styles as before, just placed in the public directory */
+body { font-family: sans-serif; background-color: #f4f4f9; color: #333; margin: 20px; }
+.container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+h1, h2 { text-align: center; color: #444; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+th { background-color: #005a9e; color: white; }
+tr:nth-child(even) { background-color: #f2f2f2; }
+button { cursor: pointer; padding: 8px 12px; border: none; border-radius: 4px; color: white; }
+.btn-delete { background-color: #d9534f; }
+.btn-toggle { background-color: #f0ad4e; }
+form { display: flex; gap: 10px; margin-bottom: 30px; }
+input[type="text"] { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+form button { background-color: #0275d8; }

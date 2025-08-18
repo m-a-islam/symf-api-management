@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KEMAS Key Management - Web Interface</title>
+    <link rel="stylesheet" href="{{ asset('styles.css') }}">
+</head>
+<body>
+<h1>KEMAS Key Management - Web Interface</h1>
+
+<div class="container">
+    <h2>Add a New Key</h2>
+    {# Give the form an ID so JavaScript can find it #}
+    <form id="add-key-form">
+        <input type="text" id="key-identifier-input" placeholder="Enter Key Identifier" required>
+        <button type="submit">Add Key (via AJAX)</button>
+    </form>
+
+    <h2>Existing Keys</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Identifier</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key in keys %}
+            <tr>
+                <td>{{ key.id }}</td>
+                <td>{{ key.keyIdentifier }}</td>
+                <td>{{ key.status }}</td>
+                <td>
+                    {# Note: these forms are now a fallback. JS will handle the action. #}
+                    <form action="{{ path('web_key_toggle_status', {'id': key.id}) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-toggle action-button" data-status="{{ key.status }}">
+                            Toggle Status
+                        </button>
+                    </form>
+                    <form action="{{ path('web_key_delete', {'id': key.id}) }}" method="post" style="display:inline;">
+                        {# We keep the _method for non-JS fallback, but JS will use a real DELETE #}
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-delete action-button">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No keys found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# Include our new JavaScript file at the end of the body #}
+<script src="{{ asset('app.js') }}"></script>
+</body>
+</html>
