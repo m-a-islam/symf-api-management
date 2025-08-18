@@ -1,86 +1,127 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // We will re-use the API endpoints from our KeyController
     const API_BASE_URL = '/api';
-
     const addKeyForm = document.getElementById('add-key-form');
     const keyIdentifierInput = document.getElementById('key-identifier-input');
+    const keysTable = document.getElementById('keys-table'); // <-- Select the TABLE, not the TBODY
 
-    // --- Hijack the "Add Key" Form Submission ---
-    if (addKeyForm) {
-        addKeyForm.addEventListener('submit', async (e) => {
-            // Prevent the default browser action (a full page reload)
-            e.preventDefault();
+    // The fetchKeys function remains the same, but we will make it more robust
+    const fetchKeys = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/keys`);
+            if (!response.ok) throw new Error('Failed to fetch keys');
+            const keys = await response.json();
 
-            const keyIdentifier = keyIdentifierInput.value.trim();
-            if (!keyIdentifier) return;
+            const keysTableBody = keysTable.querySelector('tbody');
+            if (!keysTableBody) return; // Defensive check
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/keys`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ keyIdentifier })
-                });
+            keysTableBody.innerHTML = ''; // Clear the table before rendering
+            keys.forEach(key => {
+                const row = document.createElement('tr');
+                row.dataset.keyId = key.id;
+                row.innerHTML = `
+                    <td>${key.id}</td>
+                    <td><span data-field="keyIdentifier">${key.keyIdentifier}</span></td>
+                    <td><span data-field="status">${key.status}</span></td>
+                    <td>
+                        <button class="btn-edit action-button">Edit</button>
+                        <button class="btn-toggle action-button" data-status="${key.status}">Toggle</button>
+                        <button class="btn-delete action-button">Delete</button>
+                    </td>
+                `;
+                keysTableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching keys:', error);
+        }
+    };
 
-                if (response.ok) {
-                    // If successful, just reload the page to see the new key.
-                    // A more advanced version would dynamically add a new row.
-                    window.location.reload();
-                } else {
-                    const errorData = await response.json();
-                    alert(`Error adding key: ${errorData.error || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error adding key:', error);
-                alert('An error occurred. Please check the console.');
+    // "Add Key" Form Submission (Remains the same)
+    addKeyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const keyIdentifier = keyIdentifierInput.value.trim();
+        if (!keyIdentifier) return;
+        try {
+            const response = await fetch(`${API_BASE_URL}/keys`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyIdentifier })
+            });
+            if(response.ok) {
+                keyIdentifierInput.value = '';
+                fetchKeys();
+            } else {
+                alert('Failed to add key.');
             }
-        });
-    }
-
-    // --- Add AJAX functionality to all action buttons (Delete, Toggle) ---
-    document.querySelectorAll('.action-button').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault(); // Prevent form submission
-
-            const form = e.target.closest('form');
-            const url = form.action;
-            const method = form.querySelector('input[name="_method"]')?.value || form.method;
-            const isDelete = method.toUpperCase() === 'DELETE';
-
-            if (isDelete && !confirm('Are you sure you want to delete this key?')) {
-                return;
-            }
-
-            try {
-                // We use our API endpoints here for consistency
-                const apiURL = url.replace('/key/', '/api/keys/').replace('/delete', '').replace('/toggle-status', '');
-                let apiMethod = 'POST';
-                let body = null;
-
-                if (isDelete) {
-                    apiMethod = 'DELETE';
-                } else { // It's a toggle
-                    apiMethod = 'PATCH';
-                    const currentStatus = e.target.dataset.status;
-                    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-                    body = JSON.stringify({ status: newStatus });
-                }
-
-                const response = await fetch(apiURL, {
-                    method: apiMethod,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: body
-                });
-
-                if (response.ok) {
-                    window.location.reload(); // Simple refresh to see the change
-                } else {
-                    alert('An error occurred.');
-                }
-
-            } catch (error) {
-                console.error('Action failed:', error);
-                alert('An error occurred. Please check the console.');
-            }
-        });
+        } catch (error) {
+            console.error('Error adding key:', error);
+        }
     });
+
+    // --- NEW: Single Event Listener on the TABLE element ---
+    keysTable.addEventListener('click', async (e) => {
+        const target = e.target;
+        const row = target.closest('tr');
+        if (!row || !target.classList.contains('action-button')) {
+            // If the click was not on a row or not on an action button, do nothing
+            return;
+        }
+
+        const id = row.dataset.keyId;
+
+        // --- EDIT button clicked ---
+        if (target.classList.contains('btn-edit')) {
+            const identifierSpan = row.querySelector('span[data-field="keyIdentifier"]');
+            const currentIdentifier = identifierSpan.textContent;
+            identifierSpan.innerHTML = `<input type="text" value="${currentIdentifier}" />`;
+            target.textContent = 'Save';
+            target.classList.remove('btn-edit');
+            target.classList.add('btn-save');
+        }
+
+        // --- SAVE button clicked ---
+        else if (target.classList.contains('btn-save')) {
+            const identifierInput = row.querySelector('input[type="text"]');
+            const newIdentifier = identifierInput.value;
+            const currentStatus = row.querySelector('span[data-field="status"]').textContent;
+            try {
+                const response = await fetch(`${API_BASE_URL}/keys/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ keyIdentifier: newIdentifier, status: currentStatus })
+                });
+                if(response.ok) fetchKeys();
+                else alert('Failed to save key.');
+            } catch (error) {
+                console.error('Error saving key:', error);
+            }
+        }
+
+        // --- DELETE, TOGGLE etc. (These can be added inside this same listener) ---
+        else if (target.classList.contains('btn-delete')) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/keys/${id}`, { method: 'DELETE' });
+                if(response.ok) fetchKeys();
+                else alert('Failed to delete key.');
+            } catch(error){ console.error('Delete failed', error); }
+        }
+
+        else if (target.classList.contains('btn-toggle')) {
+            const currentStatus = target.dataset.status;
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            try {
+                const response = await fetch(`${API_BASE_URL}/keys/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if(response.ok) fetchKeys();
+                else alert('Failed to toggle status.');
+            } catch(error){ console.error('Toggle failed', error); }
+        }
+    });
+
+
+    // Initial fetch of keys when the page loads
+    fetchKeys();
 });

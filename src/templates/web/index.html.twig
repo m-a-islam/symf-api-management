@@ -17,7 +17,7 @@
     </form>
 
     <h2>Existing Keys</h2>
-    <table>
+    <table id="keys-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -26,21 +26,22 @@
             <th>Actions</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="keys-table-body">
         {% for key in keys %}
-            <tr>
+            <tr data-key-id="{{ key.id }}">
                 <td>{{ key.id }}</td>
-                <td>{{ key.keyIdentifier }}</td>
-                <td>{{ key.status }}</td>
+                {# Add a span with a data attribute for easy selection #}
+                <td><span data-field="keyIdentifier">{{ key.keyIdentifier }}</span></td>
+                <td><span data-field="status">{{ key.status }}</span></td>
                 <td>
-                    {# Note: these forms are now a fallback. JS will handle the action. #}
+                    <button class="btn-edit action-button">Edit</button>
+                    {# The toggle and delete forms are our non-JS fallback #}
                     <form action="{{ path('web_key_toggle_status', {'id': key.id}) }}" method="post" style="display:inline;">
                         <button type="submit" class="btn-toggle action-button" data-status="{{ key.status }}">
-                            Toggle Status
+                            Toggle
                         </button>
                     </form>
                     <form action="{{ path('web_key_delete', {'id': key.id}) }}" method="post" style="display:inline;">
-                        {# We keep the _method for non-JS fallback, but JS will use a real DELETE #}
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="btn-delete action-button">Delete</button>
                     </form>
