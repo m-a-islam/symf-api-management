@@ -44,8 +44,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: Prepare environment and Install Dependencies
+          # This is the most important step. We do everything in one go.
+          # We change into the 'src' directory, copy the .env file,
+          # and THEN run composer install.
+        run: |
+            cd src
+            cp .env.test .env
+            composer install --prefer-dist --no-progress
 
       - name: Run Linter
         run: php ./bin/console lint:yaml ./config
