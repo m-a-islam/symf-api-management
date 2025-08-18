@@ -21,6 +21,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Copy .env.test to .env
+        run: php -r "file_exists('.env') || copy('.env.test', '.env');"
+        working-directory: ./src # Specify working directory for this step too
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
