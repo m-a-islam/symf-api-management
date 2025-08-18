@@ -12,6 +12,11 @@ jobs:
   # --- Job 1: Run Tests (Our existing CI job) ---
   test:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./src
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
