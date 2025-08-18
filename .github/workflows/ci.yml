@@ -91,6 +91,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: . # Use the root of our repo as the build context
-          dockerfile: docker/Dockerfile.prod # Specify our new production Dockerfile
+          dockerfile: ./docker/Dockerfile.prod # Specify our new production Dockerfile
           push: true # Actually push the image to the registry
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/kemas-key-api:latest # The name of the image
