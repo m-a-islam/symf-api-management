@@ -1,16 +1,16 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Key;
 use App\Repository\KeyRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA;
 
 #[Route('/api')]
 #[OA\Tag(name: 'Keys')] // This groups our endpoints in Swagger
@@ -50,13 +50,14 @@ class KeyController extends AbstractController
 
         return $this->json($data);
     }
+
     #[OA\RequestBody(
-        description: "The data needed to create a new Key",
+        description: 'The data needed to create a new Key',
         required: true,
         content: new OA\JsonContent(
-            type: "object",
+            type: 'object',
             properties: [
-                new OA\Property(property: "keyIdentifier", type: "string", example: "A1-B2-C3-D4")
+                new OA\Property(property: 'keyIdentifier', type: 'string', example: 'A1-B2-C3-D4'),
             ]
         )
     )]
@@ -103,12 +104,12 @@ class KeyController extends AbstractController
         schema: new OA\Schema(type: 'integer')
     )]
     #[OA\RequestBody(
-        description: "The new status for the Key.",
+        description: 'The new status for the Key.',
         required: true,
         content: new OA\JsonContent(
-            type: "object",
+            type: 'object',
             properties: [
-                new OA\Property(property: "status", type: "string", enum: ["active", "inactive"], example: "inactive")
+                new OA\Property(property: 'status', type: 'string', enum: ['active', 'inactive'], example: 'inactive'),
             ]
         )
     )]
@@ -170,7 +171,6 @@ class KeyController extends AbstractController
         // A 204 response should have no content, so we return an empty JsonResponse.
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
-
 
     #[Route('/keys/{id}', name: 'api_keys_get', methods: ['GET'])]
     #[OA\Parameter(

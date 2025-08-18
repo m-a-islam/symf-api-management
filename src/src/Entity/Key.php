@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\KeyRepository;
 use Doctrine\ORM\Mapping as ORM;
-#use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+// use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: KeyRepository::class)]
@@ -42,6 +42,7 @@ class Key
         // Set default values when a new Key object is created
         $this->status = 'active';
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,6 +95,7 @@ class Key
 
         return $this;
     }
+
     #[ORM\PrePersist] // <<< CHECK THIS LINE. This links the method to the "save" event.
     public function setCreatedAtValue(): void
     {
