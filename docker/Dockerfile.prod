@@ -1,5 +1,5 @@
 # =================================================================
-# Production Dockerfile for the KEMAS Key API
+# Production Dockerfile for the Key API
 # This is a multi-stage build to create a small and optimized final image.
 # =================================================================
 

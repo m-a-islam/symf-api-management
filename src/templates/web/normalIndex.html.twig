@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Key Management</title>
+    {# We can link to a CSS file in the /public directory #}
+    <link rel="stylesheet" href="{{ asset('styles.css') }}">
+</head>
+<body>
+<h1>Key Management</h1>
+
+<div class="container">
+    <h2>Add a New Key</h2>
+    {# This form will submit a POST request to our 'key_create' route #}
+    <form action="{{ path('web_key_create') }}" method="post">
+        <input type="text" name="keyIdentifier" placeholder="Enter Key Identifier" required>
+        <button type="submit">Add Key</button>
+    </form>
+
+    <h2>Existing Keys</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Identifier</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {# Loop through the 'keys' variable passed from the controller #}
+        {% for key in keys %}
+            <tr>
+                <td>{{ key.id }}</td>
+                <td>{{ key.keyIdentifier }}</td>
+                <td>{{ key.status }}</td>
+                <td>
+                    {# A form to toggle the status #}
+                    <form action="{{ path('web_key_toggle_status', {'id': key.id}) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-toggle">
+                            {{ key.status == 'active' ? 'Deactivate' : 'Activate' }}
+                        </button>
+                    </form>
+                    {# A form to delete the key #}
+                    <form action="{{ path('web_key_delete', {'id': key.id}) }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No keys found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -24,10 +24,13 @@ final class WebController extends AbstractController
 
         // Render the Twig template and pass the 'keys' variable to it.
         // We will need to create this template.
+        return $this->render('web/normalIndex.html.twig', ['keys' => $keys, 'controller_name' => 'WebController']);
+
+        /*
         return $this->render('web/index.html.twig', [
             'keys' => $keys,
             'controller_name' => 'WebController',
-        ]);
+        ]); */
     }
 
     /**
