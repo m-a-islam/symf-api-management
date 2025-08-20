@@ -10,6 +10,16 @@
 <h1>Key Management</h1>
 
 <div class="container">
+    <h1>Register an Account</h1>
+
+    {{ form_start(registrationForm) }}
+    {{ form_row(registrationForm.email) }}
+    {{ form_row(registrationForm.plainPassword, {
+        label: 'Password'
+    }) }}
+
+    <button type="submit" class="btn">Register</button>
+    {{ form_end(registrationForm) }}
     <h2>Add a New Key</h2>
     {# This form will submit a POST request to our 'key_create' route #}
     <form action="{{ path('web_key_create') }}" method="post">

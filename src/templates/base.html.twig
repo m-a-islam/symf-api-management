@@ -1,16 +1,39 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {# The block tag creates a section that child templates can override #}
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('styles.css') }}">
+    {# You can add more global CSS or JS files here #}
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <a href="{{ path('web_key_index') }}" class="logo">KEMAS App</a>
+            <nav>
+                {# --- THE LOGIC FOR THE BUTTONS --- #}
+                {% if app.user %}
+                    {# If a user is logged in, show their email and a logout button #}
+                    <span class="user-email">Logged in as: {{ app.user.email }}</span>
+                    <a href="{{ path('app_logout') }}" class="btn-logout">Logout</a>
+                {% else %}
+                    {# If no one is logged in, show login and register buttons #}
+                    <a href="{{ path('app_login') }}" class="btn-login">Login</a>
+                    <a href="{{ path('app_register') }}" class="btn-register">Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+</header>
 
-        {% block javascripts %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+<main>
+    {# This is where the content of each individual page will be inserted #}
+    {% block body %}{% endblock %}
+</main>
+
+{% block javascripts %}{% endblock %}
+</body>
 </html>
