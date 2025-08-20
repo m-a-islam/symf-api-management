@@ -34,7 +34,7 @@ final class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
-
+            dd($user);
             // For now, just redirect to the homepage after successful registration
             return $this->redirectToRoute('web_key_index');
         }
