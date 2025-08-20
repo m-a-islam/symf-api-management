@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    {# We can reuse the same CSS from our main page #}
+    <link rel="stylesheet" href="{{ asset('styles.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Register an Account</h1>
+
+    {# This will render the form, including the email and password fields #}
+    {{ form_start(registrationForm) }}
+    {{ form_row(registrationForm.email) }}
+    {{ form_row(registrationForm.plainPassword, {
+        label: 'Password'
+    }) }}
+
+    <button type="submit" class="btn">Register</button>
+    {{ form_end(registrationForm) }}
+</div>
+</body>
+</html>
