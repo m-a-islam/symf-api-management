@@ -23,7 +23,10 @@ security:
                 enable_csrf: true
             logout:
                 path: app_logout
-            custom_authenticator: App\Security\AppAuthenticator
+            custom_authenticator:
+                #- App\Security\AppAuthenticator
+                - App\Security\GoogleAuthenticator
+
                 # where to redirect after logout
                 # target: app_any_route
 
@@ -38,6 +41,7 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/connect, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
             # This secures all other pages, including your root '/' and your API.

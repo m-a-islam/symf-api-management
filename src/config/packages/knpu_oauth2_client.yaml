@@ -1,3 +1,15 @@
 knpu_oauth2_client:
     clients:
         # configure your clients as described here: https://github.com/knpuniversity/oauth2-client-bundle#configuration
+        google:
+            # The type of provider. This matches the Composer package we installed.
+            type: google
+
+            # The client ID and secret stored in our .env.local file
+            client_id: '%env(GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
+
+            # The route that Google will redirect the user back to.
+            # This MUST match the URI you entered in the Google Cloud Console.
+            redirect_route: connect_google_check
+            redirect_params: { }
