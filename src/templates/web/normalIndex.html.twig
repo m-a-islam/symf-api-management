@@ -1,25 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Key Management</title>
-    {# We can link to a CSS file in the /public directory #}
-    <link rel="stylesheet" href="{{ asset('styles.css') }}">
-</head>
-<body>
+
+{% extends 'base.html.twig' %}
+
+{# This will set the <title> tag in the base template #}
+{% block title %}Key Management{% endblock %}
+
+{# All of the content below will be injected into the {% block body %} of the base template #}
+{% block body %}
 <h1>Key Management</h1>
 
 <div class="container">
-    <h1>Register an Account</h1>
 
-    {{ form_start(registrationForm) }}
-    {{ form_row(registrationForm.email) }}
-    {{ form_row(registrationForm.plainPassword, {
-        label: 'Password'
-    }) }}
-
-    <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
     <h2>Add a New Key</h2>
     {# This form will submit a POST request to our 'key_create' route #}
     <form action="{{ path('web_key_create') }}" method="post">
@@ -66,5 +56,4 @@
         </tbody>
     </table>
 </div>
-</body>
-</html>
+{% endblock %}
