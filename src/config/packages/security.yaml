@@ -24,7 +24,7 @@ security:
             logout:
                 path: app_logout
             custom_authenticator:
-                #- App\Security\AppAuthenticator
+                - App\Security\AppAuthenticator
                 - App\Security\GoogleAuthenticator
 
                 # where to redirect after logout
